@@ -13,7 +13,24 @@ NAME	=	my_ls
 
 CFLAGS	=	-I./include -I$(LIB_PATH)
 
-SRCS	=	./src/main.c
+SRCS	=	./src/main.c \
+		src/disp_stdarg.c \
+		src/function.c \
+		src/my_concat_list.c \
+		src/my_delete_nodes.c \
+		src/my_function.c \
+		src/my_list_size.c \
+		src/my_params_to_list.c \
+		src/my_pointer.c \
+		src/my_printf.c \
+		src/my_print_list.c \
+		src/my_rev_list.c \
+		src/my_revstr.c \
+		src/my_strcmp.c \
+		src/my_strcpy.c \
+		src/my_strdup.c \
+		src/sum_stdarg.c \
+
 
 LIB_PATH=	src/lib/my/
 

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2018
 ** my_printf.c
 ** File description:
-** printf
+** my_printf
 */
 
 #include "my.h"

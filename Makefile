@@ -25,10 +25,6 @@ SRCS	=	./src/main.c \
 		src/my_printf.c \
 		src/my_print_list.c \
 		src/my_rev_list.c \
-		src/my_revstr.c \
-		src/my_strcmp.c \
-		src/my_strcpy.c \
-		src/my_strdup.c \
 		src/sum_stdarg.c \
 
 

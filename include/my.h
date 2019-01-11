@@ -59,10 +59,10 @@ typedef struct s_ls
     off_t size;
     int time;
     char *date;
-    int *s1;
-    int *s2;
-    int *s3;
-    int *s4;
+    int s1;
+    int s2;
+    int s3;
+    int s4;
 } t_ls;
 t_ls **sort_int(t_param *param, t_ls **all_stat);
 t_param *my_param(int ac, char **av);

@@ -166,6 +166,8 @@ int len_nbr(int nb)
 {
     int len = 0;
 
+    if (!nb)
+        return (1);
     while (nb != 0) {
         nb = nb / 10;
         len += 1;
@@ -208,6 +210,18 @@ void ls_l(struct dirent *lec, t_ls *ls, t_param *param)
     char_realloc(my_realloc(ls->adress, lec->d_name), param->file, param):0;
 }
 
+char *my_space(int nb)
+{
+    char *dest = malloc(sizeof(char) * (nb + 1));
+    int i;
+
+    (dest == NULL)?exit(84):0;
+    for (i = 0; i < nb; i += 1)
+        dest[i] = ' ';
+    dest[i] = '\0';
+    return (dest);
+}
+
 void print_ls(t_param *param, t_ls **all_stat)
 {
     int start = (param->r_)?(param->f_size - 1):0;
@@ -219,14 +233,13 @@ void print_ls(t_param *param, t_ls **all_stat)
 
     (param->l_)?my_printf("total %d\n", param->blocks / 2):0;
     while (start != end) {
-        if (param->l_)
-            my_printf("%c%c%c%c%c%c%c%c%c%c %s%d %s%s %s%s %s%d %s ", all_stat[start]->
-            is_dir, all_stat[start]->r_usr, all_stat[start]->w_usr,
-            all_stat[start]->x_usr, all_stat[start]->r_grp, all_stat[start]->
-            w_grp, all_stat[start]->x_grp, all_stat[start]->r_oth,
-            all_stat[start]->w_oth, all_stat[start]->x_oth, all_stat[start]->
-            nlink, all_stat[start]->usr_name, all_stat[start]->grp_name,
-            all_stat[start]->size, all_stat[start]->date);
+        if (param->l_) {
+            space1 = my_space(all_stat[end - 1]->s1 - len_nbr(all_stat[start]->nlink));
+            space2 = my_space(all_stat[end - 1]->s2 - my_strlen(all_stat[start]->usr_name));
+            space3 = my_space(all_stat[end - 1]->s3 - my_strlen(all_stat[start]->grp_name));
+            space4 = my_space(all_stat[end - 1]->s4 - len_nbr(all_stat[start]->size));
+            my_printf("%c%c%c%c%c%c%c%c%c%c %s%d %s%s %s%s %s%d %s ", all_stat[start]->is_dir, all_stat[start]->r_usr, all_stat[start]->w_usr, all_stat[start]->x_usr, all_stat[start]->r_grp, all_stat[start]->w_grp, all_stat[start]->x_grp, all_stat[start]->r_oth, all_stat[start]->w_oth, all_stat[start]->x_oth, space1, all_stat[start]->nlink, all_stat[start]->usr_name, space2, all_stat[start]->grp_name, space3, space4, all_stat[start]->size, all_stat[start]->date);
+        }
         my_printf("%s\n", all_stat[start]->name);
         start += (end - start < 0)?-1:1;
     }

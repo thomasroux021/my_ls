@@ -68,10 +68,15 @@ t_ls **sort_int(t_param *param, t_ls **all_stat);
 t_param *my_param(int ac, char **av);
 char **pars_file(int ac, char **av, t_param *param);
 char *my_time(char *time);
-void ls_l(struct dirent *lec, t_ls *ls, t_param *param);
+void ls_l(struct dirent *lec, t_ls *ls, t_param *param, char *file);
 void print_ls(t_param *param, t_ls **all_stat);
 void my_ls(char *file, t_param *param);
-
+void print_l(t_ls *stat_end, t_ls *stat_start);
+char *my_space(int nb);
+char **char_realloc(char *file, char **all_file, t_param *param);
+char *my_realloc(char *str, char *src);
+int len_nbr(int nb);
+void fill_stat(char *file, t_param *param, t_ls **all_stat, t_ls *ls);
 int my_printf(char *str, ...);
 void flag3(char *str, int i, va_list list);
 void signe(int i);

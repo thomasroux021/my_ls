@@ -15,7 +15,7 @@ void print_ls(t_param *param, t_ls **all_stat)
     (param->l_)?my_printf("total %d\n", param->blocks / 2):0;
     while (start != end) {
         if (param->l_)
-            print_l(all_stat[end - 1], all_stat[start]);
+            print_l(all_stat[param->pos_size], all_stat[start]);
         my_printf("%s\n", all_stat[start]->name);
         start += (end - start < 0)?-1:1;
     }

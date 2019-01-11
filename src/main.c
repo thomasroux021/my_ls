@@ -15,6 +15,7 @@ t_ls **sort_int(t_param *param, t_ls **all_stat)
     for (int i = 0; i < param->f_size; i += 1) {
         for (int j = 0; j < param->f_size - 1; j += 1) {
             sort = (all_stat[j]->time < all_stat[j + 1]->time)?1:0;
+            (sort && j == param->pos_size - 1)?param->pos_size -= 1:0;
             (sort)?mem = all_stat[j]:0;
             (sort)?all_stat[j] = all_stat[j + 1]:0;
             (sort)?all_stat[j + 1] = mem:0;
@@ -63,6 +64,7 @@ void fill_stat(char *file, t_param *param, t_ls **all_stat, t_ls *ls)
     int j = 0;
 
     (rep == NULL)?exit(84):0;
+    param->pos_size = param->f_size - 1;
     while ((lec = readdir(rep))) {
         (ls == NULL || all_stat == NULL || lec == NULL)?exit(84):0;
         if (lec->d_name[0] != '.') {

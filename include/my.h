@@ -37,6 +37,7 @@ typedef struct s_param
     int n_arg;
     int i;
     char **file;
+    int pos_size;
 } t_param;
 typedef struct s_ls
 {
@@ -72,6 +73,7 @@ void ls_l(struct dirent *lec, t_ls *ls, t_param *param, char *file);
 void print_ls(t_param *param, t_ls **all_stat);
 void my_ls(char *file, t_param *param);
 void print_l(t_ls *stat_end, t_ls *stat_start);
+int file_is_dir(char *file, t_param *param);
 char *my_space(int nb);
 char **char_realloc(char *file, char **all_file, t_param *param);
 char *my_realloc(char *str, char *src);

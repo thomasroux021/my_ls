@@ -59,13 +59,17 @@ typedef struct s_ls
     off_t size;
     int time;
     char *date;
+    int *s1;
+    int *s2;
+    int *s3;
+    int *s4;
 } t_ls;
 t_ls **sort_int(t_param *param, t_ls **all_stat);
 t_param *my_param(int ac, char **av);
 char **pars_file(int ac, char **av, t_param *param);
 char *my_time(char *time);
 void ls_l(struct dirent *lec, t_ls *ls, t_param *param);
-void print_ls(t_param *param, t_ls **all_stat, int j);
+void print_ls(t_param *param, t_ls **all_stat);
 void my_ls(char *file, t_param *param);
 
 int my_printf(char *str, ...);

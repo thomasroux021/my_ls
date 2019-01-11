@@ -120,7 +120,6 @@ char *my_time(char *time)
             dest[i] = '\0';
             break;
         }
-        j += (i == 4)?1:0;
         dest[i] = time[i + j];
         i += 1;
     }
@@ -151,6 +150,29 @@ char **char_realloc(char *file, char **all_file, t_param *param)
     return (dest);
 }
 
+char *my_strtostr(char *src)
+{
+    char *dest = malloc(sizeof(char) * (my_strlen(src) + 1));
+    int i;
+
+    (dest == NULL)?exit(84):0;
+    for (i = 0; src[i]; i += 1)
+        dest[i] = src[i];
+    dest[i] = '\0';
+    return (dest);
+}
+
+int len_nbr(int nb)
+{
+    int len = 0;
+
+    while (nb != 0) {
+        nb = nb / 10;
+        len += 1;
+    }
+    return (len);
+}
+
 void ls_l(struct dirent *lec, t_ls *ls, t_param *param)
 {
     struct stat fs;
@@ -162,8 +184,6 @@ void ls_l(struct dirent *lec, t_ls *ls, t_param *param)
     usr = getpwuid(fs.st_uid);
     gr = getgrgid(fs.st_gid);
     ls->blocks = fs.st_blocks;
-    (S_ISDIR(fs.st_mode) && param->rec_)?param->file =
-    char_realloc(my_realloc(ls->adress, lec->d_name), param->file, param):0;
     ls->is_dir = type[(fs.st_mode & S_IFMT) >> 13];
     ls->r_usr = (fs.st_mode & S_IRUSR)?'r':'-';
     ls->w_usr = (fs.st_mode & S_IWUSR)?'w':'-';
@@ -175,32 +195,70 @@ void ls_l(struct dirent *lec, t_ls *ls, t_param *param)
     ls->w_oth = (fs.st_mode & S_IWOTH)?'w':'-';
     ls->x_oth = (fs.st_mode & S_IXOTH)?'x':'-';
     ls->nlink = fs.st_nlink;
-    ls->usr_name = usr->pw_name;
-    ls->grp_name = gr->gr_name;
+    ls->s1 = len_nbr((int) ls->nlink);
+    ls->usr_name = my_strtostr(usr->pw_name);
+    ls->s2 = my_strlen(ls->usr_name);
+    ls->grp_name = my_strtostr(gr->gr_name);
+    ls->s3 = my_strlen(ls->grp_name);
     ls->size = fs.st_size;
+    ls->s4 = len_nbr((int) ls->size);
     ls->date = my_time(ctime(&fs.st_mtim.tv_sec));
     ls->time = (int) fs.st_mtim.tv_sec;
+    (S_ISDIR(fs.st_mode) && param->rec_)?param->file =
+    char_realloc(my_realloc(ls->adress, lec->d_name), param->file, param):0;
 }
 
-void print_ls(t_param *param, t_ls **all_stat, int j)
+void print_ls(t_param *param, t_ls **all_stat)
 {
     int start = (param->r_)?(param->f_size - 1):0;
-    int end = (param->r_)?-1:(param->f_size + j);
+    int end = (param->r_)?-1:(param->f_size);
+    char *space1;
+    char *space2;
+    char *space3;
+    char *space4;
 
     (param->l_)?my_printf("total %d\n", param->blocks / 2):0;
     while (start != end) {
-        if (param->l_) {
-            my_printf("%c%c%c%c%c%c%c%c%c%c %d %s %s %d %s ", all_stat[start]->
+        if (param->l_)
+            my_printf("%c%c%c%c%c%c%c%c%c%c %s%d %s%s %s%s %s%d %s ", all_stat[start]->
             is_dir, all_stat[start]->r_usr, all_stat[start]->w_usr,
             all_stat[start]->x_usr, all_stat[start]->r_grp, all_stat[start]->
             w_grp, all_stat[start]->x_grp, all_stat[start]->r_oth,
             all_stat[start]->w_oth, all_stat[start]->x_oth, all_stat[start]->
             nlink, all_stat[start]->usr_name, all_stat[start]->grp_name,
             all_stat[start]->size, all_stat[start]->date);
-        }
         my_printf("%s\n", all_stat[start]->name);
         start += (end - start < 0)?-1:1;
     }
+}
+
+void fill_stat(char *file, t_param *param, t_ls **all_stat, t_ls *ls)
+{
+    DIR *rep = opendir(file);
+    struct dirent *lec;
+    int j = 0;
+
+    (rep == NULL)?exit(84):0;
+    while ((lec = readdir(rep))) {
+        (ls == NULL || all_stat == NULL || lec == NULL)?exit(84):0;
+        if (lec->d_name[0] != '.') {
+            ls->adress = ((file[my_strlen(file) - 1] != '/'))?my_realloc(file,
+                    "/"):file;
+            ls->name = lec->d_name;
+            ls_l(lec, ls, param);
+            param->blocks += ls->blocks;
+            (j && ls->s1 < all_stat[j - 1]->s1)?ls->s1 = all_stat[j - 1]->s1:0;
+            (j && ls->s2 < all_stat[j - 1]->s2)?ls->s2 = all_stat[j - 1]->s2:0;
+            (j && ls->s3 < all_stat[j - 1]->s3)?ls->s3 = all_stat[j - 1]->s3:0;
+            (j && ls->s4 < all_stat[j - 1]->s4)?ls->s4 = all_stat[j - 1]->s4:0;
+            all_stat[j] = ls;
+            j += 1;
+            ls = malloc(sizeof(t_ls));
+        }
+    }
+    (param->t_)?all_stat = sort_int(param, all_stat):0;
+    print_ls(param, all_stat);
+    closedir(rep);
 }
 
 void my_ls(char *file, t_param *param)
@@ -208,35 +266,19 @@ void my_ls(char *file, t_param *param)
     struct dirent *lec;
     DIR *rep = opendir(file);
     int i = 0;
-    int j = 0;
     t_ls **all_stat;
     t_ls *ls = malloc(sizeof(t_ls));
 
     param->blocks = 0;
-    (rep == NULL || ls == NULL || readdir(rep) == NULL)?exit(84):0;
-    while ((lec = readdir(rep)))
+    (rep == NULL || ls == NULL)?exit(84):0;
+    while ((lec = readdir(rep))) {
+        (lec == NULL)?exit(84):0;
         i += (lec->d_name[0] != '.')?1:0;
+    }
     param->f_size = i;
     all_stat = malloc(sizeof(t_ls *) * (i + 1));
     closedir(rep);
-    rep = opendir(file);
-    (rep == NULL)?exit(84):0;
-    while ((lec = readdir(rep))) {
-        (ls == NULL || all_stat == NULL || lec == NULL)?exit(84):0;
-        if (lec->d_name[0] != '.') {
-            ls->adress = ((file[my_strlen(file) - 1] != '/'))?my_realloc(file,
-                    "/"):file;
-            ls_l(lec, ls, param);
-            ls->name = lec->d_name;
-            param->blocks += ls->blocks;
-            all_stat[j] = ls;
-            j += 1;
-            ls = malloc(sizeof(t_ls));
-        }
-    }
-    (param->t_)?all_stat = sort_int(param, all_stat):0;
-    print_ls(param, all_stat, (!my_strcmp(file, "."))?0:1);
-    closedir(rep);
+    fill_stat(file, param, all_stat, ls);
 }
 
 int file_is_dir(char *file, t_param *param)

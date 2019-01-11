@@ -91,6 +91,7 @@ void my_ls(char *file, t_param *param)
     }
     param->f_size = i;
     all_stat = malloc(sizeof(t_ls *) * (i + 1));
+    (all_stat == NULL)?exit(84):0;
     closedir(rep);
     fill_stat(file, param, all_stat, ls);
 }

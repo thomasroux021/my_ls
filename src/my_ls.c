@@ -40,13 +40,11 @@ void ls_l2(t_ls *ls, struct stat fs, struct dirent *lec)
     ls->name = lec->d_name;
     ls->r_usr = (fs.st_mode & S_IRUSR)?'r':'-';
     ls->w_usr = (fs.st_mode & S_IWUSR)?'w':'-';
-    ls->x_usr = (fs.st_mode & S_IXUSR)?'x':'-';
     ls->r_grp = (fs.st_mode & S_IRGRP)?'r':'-';
     ls->w_grp = (fs.st_mode & S_IWGRP)?'w':'-';
-    ls->x_grp = (fs.st_mode & S_IXGRP)?'x':'-';
     ls->r_oth = (fs.st_mode & S_IROTH)?'r':'-';
     ls->w_oth = (fs.st_mode & S_IWOTH)?'w':'-';
-    ls->x_oth = (fs.st_mode & S_ISVTX)?'t':(fs.st_mode & S_IXOTH)?'x':'-';
+    sticky(ls, fs);
     ls->nlink = fs.st_nlink;
     ls->s1 = len_nbr((int) ls->nlink);
     ls->size = fs.st_size;

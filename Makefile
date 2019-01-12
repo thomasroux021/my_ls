@@ -27,6 +27,7 @@ SRCS	=	./src/main.c \
 		src/my_rev_list.c \
 		src/sum_stdarg.c \
 		src/print.c \
+		src/sticky_bit.c \
 		src/file.c \
 		src/parser.c \
 		src/my_ls.c

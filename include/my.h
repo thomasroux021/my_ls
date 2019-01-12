@@ -78,6 +78,7 @@ char *my_space(int nb);
 char **char_realloc(char *file, char **all_file, t_param *param);
 char *my_realloc(char *str, char *src);
 int len_nbr(int nb);
+void sticky(t_ls *ls, struct stat fs);
 void fill_stat(char *file, t_param *param, t_ls **all_stat, t_ls *ls);
 int my_printf(char *str, ...);
 void flag3(char *str, int i, va_list list);

@@ -43,9 +43,9 @@ t_param *my_param(int ac, char **av)
 
     (param == NULL)?exit(84):0;
     define_param(param);
-    for (int i = 1; i < ac && av[i][0] != '\0' && av[i][0] == '-'; i += 1) {
+    for (int i = 1; i < ac; i += 1) {
         (av[i][0] == '-' && av[i][1] == '\0')?exit(84):0;
-        while (av[i][j]) {
+        while (av[i][0] == '-' && av[i][j]) {
             (av[i][j] != 'l' && av[i][j] != 'R' && av[i][j] != 'd' &&
             av[i][j] != 'r' && av[i][j] != 't')?exit(84):0;
             param->l_ = (av[i][j] == 'l')?1:param->l_;
@@ -64,10 +64,8 @@ int nb_file(int ac, char **av)
 {
     int k = 0;
 
-    for (int i = 1; i < ac; i += 1) {
-        (av[i][0] == '-' && k)?exit(84):0;
+    for (int i = 1; i < ac; i += 1)
         k += (av[i][0] != '-')?1:0;
-    }
     return (k);
 }
 

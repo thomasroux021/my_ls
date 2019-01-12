@@ -78,7 +78,7 @@ void fill_stat(char *file, t_param *param, t_ls **all_stat, t_ls *ls)
     }
     (param->t_)?all_stat = sort_int(param, all_stat):0;
     print_ls(param, all_stat);
-    closedir(rep);
+    (closedir(rep) == -1)?exit(84):0;
 }
 
 int main(int ac, char **av)

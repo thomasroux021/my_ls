@@ -9,11 +9,11 @@
 
 void param_file(t_ls *ls, struct stat fs)
 {
-    struct passwd *usr;
-    struct group *gr;
+    struct passwd *usr = getpwuid(fs.st_uid);
+    struct group *gr = getgrgid(fs.st_gid);
+    char *mem = ctime(&fs.st_mtim.tv_sec);
 
-    usr = getpwuid(fs.st_uid);
-    gr = getgrgid(fs.st_gid);
+    (usr == NULL || gr == NULL || mem == NULL)?exit(84):0;
     ls->r_usr = (fs.st_mode & S_IRUSR)?'r':'-';
     ls->w_usr = (fs.st_mode & S_IWUSR)?'w':'-';
     ls->x_usr = (fs.st_mode & S_IXUSR)?'x':'-';
@@ -27,7 +27,7 @@ void param_file(t_ls *ls, struct stat fs)
     ls->usr_name = usr->pw_name;
     ls->grp_name = gr->gr_name;
     ls->size = fs.st_size;
-    ls->date = my_time(ctime(&fs.st_mtim.tv_sec));
+    ls->date = my_time(mem);
     ls->time = (int) fs.st_mtim.tv_sec;
 }
 

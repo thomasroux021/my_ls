@@ -38,12 +38,12 @@ int my_charlist_size(linked_list_t *list)
 char *my_linkedtostr(linked_list_t *list)
 {
     int j = 0;
-    int i = my_charlist_size(list);
+    int i = 0;
     linked_list_t *temp = list;
     char *dest = malloc(sizeof(char) * (i + 1));
 
-    fill(dest, i);
-    i = 0;
+    (dest == NULL)?exit(84):0;
+    fill(dest, my_charlist_size(list));
     while (dest[i] != '\0' && temp != NULL) {
         while (temp != NULL && (temp->data)[j] != '\0')
             j += 1;

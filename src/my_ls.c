@@ -34,6 +34,9 @@ int len_nbr(int nb)
 
 void ls_l2(t_ls *ls, struct stat fs, struct dirent *lec)
 {
+    char *mem = ctime(&fs.st_mtim.tv_sec);
+
+    (mem == NULL)?exit(84):0;
     ls->name = lec->d_name;
     ls->r_usr = (fs.st_mode & S_IRUSR)?'r':'-';
     ls->w_usr = (fs.st_mode & S_IWUSR)?'w':'-';
@@ -43,12 +46,13 @@ void ls_l2(t_ls *ls, struct stat fs, struct dirent *lec)
     ls->x_grp = (fs.st_mode & S_IXGRP)?'x':'-';
     ls->r_oth = (fs.st_mode & S_IROTH)?'r':'-';
     ls->w_oth = (fs.st_mode & S_IWOTH)?'w':'-';
-    ls->x_oth = (fs.st_mode & S_IXOTH)?'x':'-';
+    ls->x_oth = (fs.st_mode & S_ISVTX)?'t':(fs.st_mode & S_IXOTH)?'x':'-';
     ls->nlink = fs.st_nlink;
     ls->s1 = len_nbr((int) ls->nlink);
     ls->size = fs.st_size;
     ls->s4 = len_nbr((int) ls->size);
-    ls->date = my_time(ctime(&fs.st_mtim.tv_sec));
+    ls->date = my_time(mem);
+    ls->time = (int) fs.st_mtim.tv_sec;
 }
 
 void ls_l(struct dirent *lec, t_ls *ls, t_param *param, char *file)
@@ -63,13 +67,13 @@ void ls_l(struct dirent *lec, t_ls *ls, t_param *param, char *file)
     (stat(my_realloc(ls->adress, lec->d_name), &fs) == -1)?exit(84):0;
     usr = getpwuid(fs.st_uid);
     gr = getgrgid(fs.st_gid);
+    (usr == NULL || gr == NULL)?exit(84):0;
     ls->blocks = fs.st_blocks;
     ls->is_dir = type[(fs.st_mode & S_IFMT) >> 13];
     ls->usr_name = my_strtostr(usr->pw_name);
     ls->s2 = my_strlen(ls->usr_name);
     ls->grp_name = my_strtostr(gr->gr_name);
     ls->s3 = my_strlen(ls->grp_name);
-    ls->time = (int) fs.st_mtim.tv_sec;
     ls_l2(ls, fs, lec);
     (S_ISDIR(fs.st_mode) && param->rec_)?param->file =
     char_realloc(my_realloc(ls->adress, lec->d_name), param->file, param):0;
@@ -91,7 +95,6 @@ void my_ls(char *file, t_param *param)
     }
     param->f_size = i;
     all_stat = malloc(sizeof(t_ls *) * (i + 1));
-    (all_stat == NULL)?exit(84):0;
-    closedir(rep);
+    (all_stat == NULL || closedir(rep) == -1)?exit(84):0;
     fill_stat(file, param, all_stat, ls);
 }

@@ -26,6 +26,7 @@ char *clean_zero(char *result)
     int i = 0;
     char *str = malloc(sizeof(char) * (my_strlen(result) + 1));
 
+    (str == NULL)?exit(84):0;
     while (*result == '0' && *(result + 1) != '\0')
         result++;
     while (*result != '\0') {

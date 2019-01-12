@@ -14,6 +14,7 @@ linked_list_t *add_element_at_begin(linked_list_t **list, char *data)
     linked_list_t *new_list;
 
     new_list = malloc(sizeof(*new_list));
+    (new_list == NULL)?exit(84):0;
     new_list->data = data;
     new_list->next = *list;
     *list = new_list;

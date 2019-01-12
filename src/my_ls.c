@@ -35,15 +35,16 @@ int len_nbr(int nb)
 void ls_l2(t_ls *ls, struct stat fs, struct dirent *lec)
 {
     char *mem = ctime(&fs.st_mtim.tv_sec);
+    char *buf = malloc(sizeof(char) * 100);
+    ssize_t size;
 
+    (mem == NULL || buf == NULL)?exit(84):0;
+    if (ls->is_dir == 'l')
+        ((size = readlink(my_realloc(ls->adress, lec->d_name), buf,
+        (size_t) 100)) == -1)?exit(84):(buf[size] = '\0');
     (mem == NULL)?exit(84):0;
-    ls->name = lec->d_name;
-    ls->r_usr = (fs.st_mode & S_IRUSR)?'r':'-';
-    ls->w_usr = (fs.st_mode & S_IWUSR)?'w':'-';
-    ls->r_grp = (fs.st_mode & S_IRGRP)?'r':'-';
-    ls->w_grp = (fs.st_mode & S_IWGRP)?'w':'-';
-    ls->r_oth = (fs.st_mode & S_IROTH)?'r':'-';
-    ls->w_oth = (fs.st_mode & S_IWOTH)?'w':'-';
+    ls->name = (ls->is_dir == 'l')?my_realloc(my_realloc(lec->d_name, " -> "),
+            buf):(lec->d_name);
     sticky(ls, fs);
     ls->nlink = fs.st_nlink;
     ls->s1 = len_nbr((int) ls->nlink);
@@ -51,6 +52,7 @@ void ls_l2(t_ls *ls, struct stat fs, struct dirent *lec)
     ls->s4 = len_nbr((int) ls->size);
     ls->date = my_time(mem);
     ls->time = (int) fs.st_mtim.tv_sec;
+    free(buf);
 }
 
 void ls_l(struct dirent *lec, t_ls *ls, t_param *param, char *file)
@@ -62,7 +64,7 @@ void ls_l(struct dirent *lec, t_ls *ls, t_param *param, char *file)
 
     ls->adress = ((file[my_strlen(file) - 1] != '/'))?my_realloc(file,
                     "/"):file;
-    (stat(my_realloc(ls->adress, lec->d_name), &fs) == -1)?exit(84):0;
+    (lstat(my_realloc(ls->adress, lec->d_name), &fs) == -1)?exit(84):0;
     usr = getpwuid(fs.st_uid);
     gr = getgrgid(fs.st_gid);
     (usr == NULL || gr == NULL)?exit(84):0;
